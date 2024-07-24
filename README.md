@@ -17,20 +17,24 @@ O projeto consiste nas seguintes etapas:
 ![image](https://github.com/user-attachments/assets/cc94d693-6a4a-40ad-ad42-a8e778f3cd04)
 
 ## Seleção do programa a ser executado:
-- [x] (Fátima e Bianca) - Escrever um programa simples em alto nível (python, C) que contenha pelo menos uma função, condicionais (if, etc) e que esteja alinhado com a temática da equipe.
-- [ ] (Bianca) - Escolher uma função específica que o microprocessador MIPS será capaz de executar. Esta função deve ser composta por um conjunto de instruções MIPS (adaptar o código para Assembly).
+- [x] (Bianca) - Escrever um programa simples em alto nível (Python) que contenha pelo menos uma função, condicionais (if, etc) e que esteja alinhado com a temática da equipe.
+- [x] (Bianca) - Escolher uma função específica que o microprocessador MIPS será capaz de executar. Esta função deve ser composta por um conjunto de instruções MIPS (adaptar o código para Assembly).
 
-## Projeto da Unidade de Controle:
-- [ ] () - (Implementar a unidade de controle do processador, responsável por coordenar as operações do processador, gerando os sinais de controle apropriados para cada instrução.
-
-## Projeto da Unidade Lógica e Aritmética e Dados:
-- [ ] () - Implementar a unidade lógica e aritmética e de dados, que inclui componentes como registradores, ALU (Unidade Lógica e Aritmética), memória e outros elementos necessários para a execução das instruções.
+## Módulos em Verilog
+- [ ] (Bianca) - PC, Instruction Memory, Register File, Data Memory, Sign Extend, ALU, PCPlus4, PCBranch.
+    
+- [ ] (Filipe) - Control Unit.
 
 ## Integração das Unidades de Controle e Dados:
 - [ ] () - Integrar a unidade de controle com a unidade de dados para formar o microprocessador completo, garantindo que as instruções sejam executadas corretamente.
 
+## Assembler
+- [ ] () - Convertendo o código do projeto em Assembly para binário.
+
 ## Simulação e Testes:
-- [ ] () - Simular o microprocessador implementado utilizando ferramentas de simulação digital para verificar a correção e eficiência da implementação. Não esquecendo de realizar testes abrangentes para validar o funcionamento correto do processador para a função escolhida.
+- [ ] () - Montagem dos Testbench para a simulação.
+- [ ] (Vinícius) - Simulação do microprocessador, utilizando o Software ModelSim.
+- [ ] () - Teste e Depuração do Software Assembly no microprocessador.
 
 ## Relatório do Projeto:
 - [ ] () - Relatório especificando cada arquivo feito e lógica utilizada, além, de prints com o teste feito da função escolhida. O relatório deverá ser encerrado com uma conclusão que informe os conhecimentos adquiridos durante a realização do projeto.
