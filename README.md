@@ -37,7 +37,7 @@ O projeto consiste nas seguintes etapas:
 - [ ] () - Teste e Depuração do Software Assembly no microprocessador.
 
 ## Relatório do Projeto:
-- [ ] () - Relatório especificando cada arquivo feito e lógica utilizada, além, de prints com o teste feito da função escolhida. O relatório deverá ser encerrado com uma conclusão que informe os conhecimentos adquiridos durante a realização do projeto.
+- [ ] (Paula) - Relatório especificando cada arquivo feito e lógica utilizada, além, de prints com o teste feito da função escolhida. O relatório deverá ser encerrado com uma conclusão que informe os conhecimentos adquiridos durante a realização do projeto.
 
 # Ferramentas e Recursos
   * Livro Texto: "Projeto Digital e Arquitetura de Computadores" de David Money Harris e Sarah L. Harris, capítulo 6 e 7.
