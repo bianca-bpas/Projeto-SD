@@ -30,7 +30,7 @@ O projeto consiste nas seguintes etapas:
 - [ ] (Paula) - Convertendo o código do projeto em Assembly para binário.
 
 ## Simulação e Testes:
-- [ ] () - Montagem dos Testbench para a simulação.
+- [ ] (Vinícius) - Montagem dos Testbench para a simulação.
 - [ ] (Vinícius) - Simulação do microprocessador, utilizando o Software ModelSim.
 - [ ] () - Teste e Depuração do Software Assembly no microprocessador.
 
