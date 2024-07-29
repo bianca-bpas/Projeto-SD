@@ -21,9 +21,7 @@ O projeto consiste nas seguintes etapas:
 - [x] (Bianca) - Escolher uma função específica que o microprocessador MIPS será capaz de executar. Esta função deve ser composta por um conjunto de instruções MIPS (adaptar o código para Assembly).
 
 ## Módulos em Verilog
-- [ ] (Bianca) - PC, Instruction Memory, Register File, Data Memory, Sign Extend, ALU, PCPlus4, PCBranch.
-    
-- [ ] (Filipe) - Control Unit.
+- [x] (Bianca) - PC, Instruction Memory, Register File, Data Memory, Sign Extend, ALU, PCPlus4, PCBranch, Control Unit.
 
 ## Integração das Unidades de Controle e Dados:
 - [ ] () - Integrar a unidade de controle com a unidade de dados para formar o microprocessador completo, garantindo que as instruções sejam executadas corretamente.
