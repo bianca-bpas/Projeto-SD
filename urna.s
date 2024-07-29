@@ -6,14 +6,13 @@ ENCERRAR: .word 12345
 candidato1: .asciiz "C1\n"
 candidato2: .asciiz "C2\n"
 candidato3: .asciiz "C3\n"
-nulo: .asciiz "Nulo\n"
 
 # Array de endereços dos nomes dos candidatos
-candidatos: .word candidato1, candidato2, candidato3, nulo
+candidatos: .word candidato1, candidato2, candidato3
 
-votos: .word 0, 0, 0, 0, 0 # C1, C2, C3, Nulo, Branco
+votos: .word 0, 0, 0 # C1, C2, C3
 
-msg_digite_voto: .asciiz "Digite seu voto (0-3) ou 4 para branco: \n"
+msg_digite_voto: .asciiz "Digite seu voto (0-3): \n"
 msg_confirmar: .asciiz "Aperte confirmar (C): \n"
 confirma: .byte 'C'
 msg_resultado: .asciiz "\nResultado da votação:\n"
@@ -72,7 +71,7 @@ end_loop:
 
 resultado:
     li $t0, 0
-    li $t1, 4 # Número de candidatos
+    li $t1, 3 # Número de candidatos
 
 print_loop:
     beq $t0, $t1, end_print_loop
