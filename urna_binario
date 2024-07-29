@@ -1,0 +1,86 @@
+.text
+.globl main
+main:
+    001001 00000 01001 1111 1111 1111 1111
+
+loop: 
+    001001 00000 00000 0000 0000 0000 0100
+    001111 00000 00100 0000 0000 0000 0100    #o negócio daquela variável (msg_digite_voto) eu não tenho certeza
+    000000 00000 00000 00000 00000 001100
+
+    001001 00000 00000 0000 0000 0000 0101
+    000000 00000 00000 00000 00000 001100
+    000000 00000 00000 01001 00000 001000
+
+    100011 00000 01000 0000 0000 0000 0010
+    000100 01000 01001 offset    #pesquisar melhor o que é esse offset
+    000101 01001 00000 offset    #não achei os opcode nem para blt nem para bgt, vou deixar assim por enquanto
+    000101 01001 00100 offset
+
+    001001 00000 00000 0000 0000 0000 0100
+    la $a0, newline
+    syscall
+
+    li $v0, 4
+    la $a0, msg_confirmar
+    syscall
+
+    li $v0, 12
+    syscall
+    li $t2, 'C'
+    bne $v0, $t2, loop
+
+    sll $t2, $t1, 2
+    la $t3, votos
+    add $t3, $t3, $t2
+    lw $t4, 0($t3)
+    addi $t4, $t4, 1
+    sw $t4, 0($t3)
+
+    j loop
+
+end_loop:
+    li $v0, 4
+    la $a0, msg_resultado
+    syscall
+
+    jal resultado
+
+    li $v0, 10
+    syscall
+
+resultado:
+    li $t0, 0
+    li $t1, 3 # Número de candidatos
+
+print_loop:
+    beq $t0, $t1, end_print_loop
+
+    # Carregar o endereço do nome do candidato a partir do array candidatos
+    sll $t2, $t0, 2         # t2 = t0 * 4 (tamanho de palavra)
+    la $t3, candidatos      # Carrega o endereço base do array de candidatos
+    lw $a0, 0($t3)          # Carrega o endereço da string do candidato
+    lw $a0, 0($t3)          # Carrega o endereço do ponteiro de string
+    add $t3, $t3, $t2       # Adiciona o deslocamento do índice ao endereço base
+    lw $a0, 0($t3)          # Carrega o ponteiro da string
+    li $v0, 4               # Prepara syscall para imprimir string
+    syscall
+
+    # Imprimir os votos
+    sll $t3, $t0, 2
+    la $t4, votos
+    add $t4, $t4, $t3
+    lw $a0, 0($t4)
+    li $v0, 1
+    syscall
+
+    # Imprimir quebra de linha
+    li $v0, 4
+    la $a0, newline
+    syscall
+
+    addi $t0, $t0, 1
+    j print_loop
+
+end_print_loop:
+    jr $ra
