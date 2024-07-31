@@ -12,7 +12,7 @@ candidatos: .word candidato1, candidato2, candidato3
 
 votos: .word 0, 0, 0 # C1, C2, C3
 
-msg_digite_voto: .asciiz "Digite seu voto (0-3): \n"
+msg_digite_voto: .asciiz "Digite seu voto (0-2): \n"
 msg_confirmar: .asciiz "Aperte confirmar (C): \n"
 confirma: .byte 'C'
 msg_resultado: .asciiz "\nResultado da votação:\n"
