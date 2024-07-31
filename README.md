@@ -32,7 +32,7 @@ O projeto consiste nas seguintes etapas:
 ## Simulação e Testes:
 - [ ] (Vinícius) - Montagem dos Testbench para a simulação.
 - [ ] (Vinícius) - Simulação do microprocessador, utilizando o Software ModelSim.
-- [ ] () - Teste e Depuração do Software Assembly no microprocessador.
+- [ ] (Paula) - Teste e Depuração do Software Assembly no microprocessador.
 
 ## Relatório do Projeto:
 - [ ] (Paula) - Relatório especificando cada arquivo feito e lógica utilizada, além, de prints com o teste feito da função escolhida. O relatório deverá ser encerrado com uma conclusão que informe os conhecimentos adquiridos durante a realização do projeto.
