@@ -20,97 +20,99 @@ msg_resultado: .asciiz "\nResultado da votação:\n"
 .text
 .globl main
 main:
-    0011 1101 0001 0000 1111 1111 1111 1111 # lui $t1, 0xFFFF
-    0011 0111 0101 0001 1111 1111 1111 1111 # ori $t1, $t1, 0xFFFF
+    00110100000010011111111111111111 # ori $t1, $zero, -1
 
 loop: 
-    0011 1101 0010 0000 0000 0000 0000 0000 # lui $v0, 0x0000
-    0011 0111 0100 0010 0000 0000 0000 0100 # ori $v0, $v0, 0x0004
+    001101 00000 00010 0000 0000 0000 0100 # ori $v0, $v0, 4
     001111 00000 00100 upper_16_bits # lui $a0, parte alta do endereço de msg_digite_voto
     001101 00100 00100 lower_16_bits # ori $a0, $a0, parte baixa do endereço de msg_digite_voto
     0000 0000 0000 0000 0000 0000 0000 1100 # syscall
     
-    0011 1101 0010 0000 0000 0000 0000 0000 # li $v0, 5
-    0011 0111 0100 0010 0000 0000 0000 0101
+     
+    0011 0111 0100 0010 0000 0000 0000 0101 # li $v0, 5
     0000 0000 0000 0000 0000 0000 0000 1100 # syscall
     0000 0010 0100 1001 0000 0000 0010 0001 # move $t1, $v0
 
-    100011 00000 01000 1000000000010000 # lw $t0, ENCERRAR
-    000100 01000 01001 0000000000000100 # beq $t0, $t1, end_loop
+    100011 00000 01000 offset # lw $t0, ENCERRAR
+    000100 01000 01001 offset # beq $t0, $t1, end_loop
 
     000000 01001 00000 00001 00000 101010  # slt $at, $t1, $zero
-    000101 00001 00000 0000 0000 0000 0100 # bne $at, $zero, loop
+    000101 00001 00000 offset # bne $at, $zero, loop
     001010 01001 00001 0000 0000 0000 0101 # slti $at, $t1, 5
-    000100 00001 00000 0000 0000 0000 0100 # beq $at, $zero, loop
+    000100 00001 00000 offset # beq $at, $zero, loop
 
-    001111 00000 00010 0000 0000 0000 0100 # li $v0, 4
-    001101 00010 00010 0000 0000 0000 0100
-    001111 00000 00100 0001 0000 0000 0000 # la $a0, newline
-    001101 00100 00100 0000 0000 0000 0000
+    001101 00000 00010 0000 0000 0000 0100 # li $v0, 4
+    001111 00000 00100 upper_16_bits # la $a0, newline
+    001101 00100 00100 lower_16_bits
     0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
-    001111 00000 00010 0000 0000 0000 0100 # li $v0, 4
-    001101 00010 00010 0000 0000 0000 0100
+    001101 00000 00010 0000 0000 0000 0100 # li $v0, 4
     001111 00000 00100 upper_16_bits # lui $a0, parte alta do endereço de msg_confirmar
     001101 00100 00100 lower_16_bits # ori $a0, $a0, parte baixa do endereço de msg_confirmar
     0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
-    li $v0, 12
-    syscall
-    li $t2, 'C'
-    bne $v0, $t2, loop
+    00110100000000100000000000001100 # ori $v0, $zero, 12
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
+    00110100000010100000000001000011 # ori $t2, $zero, 67 (67 é o valor ASII de C)
+    0001 0100 0100 1010 offset # bne $v0, $t2, loop
 
-    sll $t2, $t1, 2
-    la $t3, votos
-    add $t3, $t3, $t2
-    lw $t4, 0($t3)
-    addi $t4, $t4, 1
-    sw $t4, 0($t3)
 
-    j loop
+    0000 0000 0000 1001 0101 0000 1000 0000 # sll $t2, $t1, 2
+    001111 01011 0000 0000 upper_16_bits # lui $t3, upper_16_bits
+    001101 01011 01011 0000 0000 lower_16_bits # ori $t3, $t3, lower_16_bits
+    00000001011010100101100000100000 # add $t3, $t3, $t2
+    10001101011011000000000000000000 # lw $t4, 0($t3)
+    00100001100011000000000000000001 # addi $t4, $t4, 1
+    10101101011011000000000000000000 # sw $t4, 0($t3)
+
+    000010 address # j loop
 
 end_loop:
-    li $v0, 4
-    la $a0, msg_resultado
-    syscall
+    0011 0100 0000 0010 0000 0000 0000 0100 # ori $v0, $zero, 4
+    001111 00100 upper_16_bits # lui $a0, upper_16_bits
+    001101 00100 00100 lower_16_bits #  ori $a0, $a0, lower_16_bits
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
-    jal resultado
+    000011 address # jal resultado
 
-    li $v0, 10
-    syscall
+    0011 0100 0000 0010 0000 0000 0000 1010 # li $v0, 10
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
 resultado:
-    li $t0, 0
-    li $t1, 3 # Número de candidatos
+    00110100000010000000000000000000 # li $t0, 0
+    0011 0100 0001 0010 0000 0000 0000 0011 # li $t1, 3 # Número de candidatos
 
 print_loop:
-    beq $t0, $t1, end_print_loop
+    000100 01000 01001 offset # beq $t0, $t1, end_print_loop
 
     # Carregar o endereço do nome do candidato a partir do array candidatos
-    sll $t2, $t0, 2         # t2 = t0 * 4 (tamanho de palavra)
-    la $t3, candidatos      # Carrega o endereço base do array de candidatos
-    lw $a0, 0($t3)          # Carrega o endereço da string do candidato
-    lw $a0, 0($t3)          # Carrega o endereço do ponteiro de string
-    add $t3, $t3, $t2       # Adiciona o deslocamento do índice ao endereço base
-    lw $a0, 0($t3)          # Carrega o ponteiro da string
-    li $v0, 4               # Prepara syscall para imprimir string
-    syscall
+    000000000000100001010000100 # sll $t2, $t0, 2         # t2 = t0 * 4 (tamanho de palavra)
+    001111 01011 upper_16_bits # la $t3, candidatos # Carrega o endereço base do array de candidatos
+    001101 01011 01011 lower_16_bits
+    10001101011001000000000000000000 # lw $a0, 0($t3)          # Carrega o endereço da string do candidato
+    10001101011001000000000000000000 # lw $a0, 0($t3)          # Carrega o endereço do ponteiro de string
+    00000001011010100101100000100000 # add $t3, $t3, $t2       # Adiciona o deslocamento do índice ao endereço base
+    10001101011001000000000000000000 # lw $a0, 0($t3)          # Carrega o ponteiro da string
+    0011 0100 0000 0010 0000 0000 0000 0100  # ori $v0, $zero, 4          # Prepara syscall para imprimir string
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
     # Imprimir os votos
-    sll $t3, $t0, 2
-    la $t4, votos
-    add $t4, $t4, $t3
-    lw $a0, 0($t4)
-    li $v0, 1
-    syscall
+    000000000000100001011000100 # sll $t3, $t0, 2
+    001111 01100 upper_16_bits # la $t4, votos
+    001101 01100 01100 lower_16_bits
+    00000001100010110110000000100000 # add $t4, $t4, $t3
+    10001101100001000000000000000000 # lw $a0, 0($t4)
+    0011 0100 0000 0010 0000 0000 0000 0001 # li $v0, 1
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
     # Imprimir quebra de linha
-    li $v0, 4
-    la $a0, newline
-    syscall
+    0011 0100 0000 0010 0000 0000 0000 0100 # ori $v0, $zero, 4
+    001111 00100 upper_16_bits # la $a0, newline
+    001101 00100 00100 lower_16_bits
+    0000 0000 0000 0000 0000 0000 0000 1100 # syscall
 
-    addi $t0, $t0, 1
-    j print_loop
+    00100001000010000000000000000001 # addi $t0, $t0, 1
+    000010 address # j print_loop
 
 end_print_loop:
-    jr $ra
+    00000011111100000000000000001000 # jr $ra
