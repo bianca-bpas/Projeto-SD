@@ -27,7 +27,7 @@ O projeto consiste nas seguintes etapas:
 - [ ] () - Integrar a unidade de controle com a unidade de dados para formar o microprocessador completo, garantindo que as instruções sejam executadas corretamente.
 
 ## Assembler
-- [ ] (Paula) - Convertendo o código do projeto em Assembly para binário.
+- [x] (Paula) - Convertendo o código do projeto em Assembly para binário.
 
 ## Simulação e Testes:
 - [ ] (Vinícius) - Montagem dos Testbench para a simulação.
