@@ -168,13 +168,14 @@ module TopModule( // Adicionar esta linha para iniciar o módulo superior
     input clk
 );
 
-// Interconexões e instâncias de outros módulos
-
+// Definição de sinais
 wire [31:0] PC, Instr, ReadData1, ReadData2, ALUResult, MemData, SignImm;
 wire [4:0] WriteReg;
 wire [2:0] ALUOp;
 wire MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump, Zero;
-wire [31:32] PCNext, PCBranch, PCJump;
+wire [31:0] PCNext, PCBranch, PCJump;
+
+// Instanciação dos módulos
 
 ProgramCounter pc(
     .clk(clk),
@@ -227,10 +228,13 @@ DataMemory dm(
     .ReadData(MemData)
 );
 
+// Atribuições
 assign SignImm = { {16{Instr[15]}}, Instr[15:0] };
 assign WriteReg = RegDst ? Instr[15:11] : Instr[20:16];
 assign PCBranch = PC + (SignImm << 2);
 assign PCJump = {PC[31:28], Instr[25:0] << 2}; // Jump address
 assign PCNext = Jump ? PCJump : (Zero & Branch ? PCBranch : PC + 4);
+
+endmodule // Adicionar esta linha para fechar o módulo superior
 
 endmodule // Adicionar esta linha para fechar o módulo superior
