@@ -154,15 +154,17 @@ module InstructionMemory(
     output [31:0] Instr
 );
 
-reg [31:0] Memory [255:0];
+// Alterar o tamanho da memória para 69
+reg [31:0] Memory [68:0];
 
 initial begin
-    $readmemb("software.bin", Memory);
+    $readmemb("instructions.mem", Memory);
 end
 
 assign Instr = Memory[Address >> 2];
 
-endmodule // Adicionar esta linha para fechar o módulo InstructionMemory
+endmodule
+
 
 module TopModule( // Adicionar esta linha para iniciar o módulo superior
     input clk
