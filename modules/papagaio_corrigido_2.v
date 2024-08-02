@@ -71,7 +71,7 @@ always @(Op or Funct) begin
     endcase
 end
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo ControlUnit
 
 module RegisterFile(
     input clk,
@@ -91,7 +91,7 @@ end
 assign ReadData1 = RegFile[ReadReg1];
 assign ReadData2 = RegFile[ReadReg2];
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo RegisterFile
 
 module ALU(
     input [31:0] SrcA, SrcB,
@@ -114,7 +114,7 @@ end
 
 assign Zero = (ALUResult == 0);
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo ALU
 
 module DataMemory(
     input clk,
@@ -135,7 +135,7 @@ end
 
 assign ReadData = Memory[Address >> 2];
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo DataMemory
 
 module ProgramCounter(
     input clk,
@@ -147,7 +147,7 @@ always @(posedge clk) begin
     PC <= PCNext;
 end
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo ProgramCounter
 
 module InstructionMemory(
     input [31:0] Address,
@@ -162,14 +162,19 @@ end
 
 assign Instr = Memory[Address >> 2];
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo InstructionMemory
 
+module TopModule( // Adicionar esta linha para iniciar o módulo superior
+    input clk
+);
+
+// Interconexões e instâncias de outros módulos
 
 wire [31:0] PC, Instr, ReadData1, ReadData2, ALUResult, MemData, SignImm;
 wire [4:0] WriteReg;
 wire [2:0] ALUOp;
 wire MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump, Zero;
-wire [31:0] PCNext, PCBranch, PCJump;
+wire [31:32] PCNext, PCBranch, PCJump;
 
 ProgramCounter pc(
     .clk(clk),
@@ -228,4 +233,4 @@ assign PCBranch = PC + (SignImm << 2);
 assign PCJump = {PC[31:28], Instr[25:0] << 2}; // Jump address
 assign PCNext = Jump ? PCJump : (Zero & Branch ? PCBranch : PC + 4);
 
-endmodule
+endmodule // Adicionar esta linha para fechar o módulo superior
