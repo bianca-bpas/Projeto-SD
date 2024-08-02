@@ -236,5 +236,3 @@ assign PCJump = {PC[31:28], Instr[25:0] << 2}; // Jump address
 assign PCNext = Jump ? PCJump : (Zero & Branch ? PCBranch : PC + 4);
 
 endmodule // Adicionar esta linha para fechar o módulo superior
-
-endmodule // Adicionar esta linha para fechar o módulo superior
