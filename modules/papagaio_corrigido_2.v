@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module ControlUnit(
     input [5:0] Op, 
     input [5:0] Funct,
@@ -158,7 +160,7 @@ module InstructionMemory(
 reg [31:0] Memory [68:0];
 
 initial begin
-    $readmemb("instructions.mem", Memory);
+  $readmemb("instructions.mem", Memory, 68, 0);
 end
 
 assign Instr = Memory[Address >> 2];
