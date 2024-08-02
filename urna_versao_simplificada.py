@@ -14,7 +14,7 @@ confirma = 'C'
 msg_voto_recebido = "Voto recebido:"
 msg_resultado = "Resultado da votação:"
 
-# Lista de votos pré-definida (20 votos)
+# Lista de votos pré-definida (23 votos)
 lista_de_votos = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1]
 
 # Simulação dos votos
