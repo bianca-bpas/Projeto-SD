@@ -24,7 +24,7 @@ lista_de_votos: .word 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1
 .globl main
 main:
     li $t0, 0                # Índice da lista de votos
-    li $t1, 23               # Número de votos na lista (23 em vez de 20)
+    li $t1, 23               # Número de votos na lista
     la $t2, lista_de_votos   # Endereço da lista de votos
     lw $t3, ENCERRAR         # Carregar o valor de ENCERRAR
 
