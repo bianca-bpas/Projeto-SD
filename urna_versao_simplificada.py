@@ -1,3 +1,4 @@
+# Definição de constantes e variáveis
 ENCERRAR = 12345
 
 candidato1 = "C1"
@@ -8,25 +9,27 @@ candidatos = [candidato1, candidato2, candidato3]
 
 votos = [0, 0, 0] 
 
-msg_digite_voto = "Digite seu voto (0-2): \n"
 msg_confirmar = "Aperte confirmar (C): "
 confirma = 'C'
+msg_voto_recebido = "Voto recebido:"
 msg_resultado = "Resultado da votação:"
 
-print(msg_digite_voto)
-voto = int(input())
-while voto != ENCERRAR:
+# Lista de votos pré-definida (20 votos)
+lista_de_votos = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1]
+
+# Simulação dos votos
+for voto in lista_de_votos:
+    if voto == ENCERRAR:
+        break
+    
+    print(msg_voto_recebido, voto)
     print(msg_confirmar)
-    opcao = input().upper()
+    opcao = 'C'  # Simulando a confirmação do voto
         
     if opcao == confirma:
         votos[voto] += 1
 
-    print(msg_digite_voto)
-    voto = int(input())
-
 print(msg_resultado)
-for i in range(0,3):
-    print(candidatos[i])
-    print(votos[i])
+for i in range(0, 3):
+    print(f"{candidatos[i]}: {votos[i]}")
 print()

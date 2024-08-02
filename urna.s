@@ -3,63 +3,71 @@ newline: .asciiz "\n"
 ENCERRAR: .word 12345
 
 # Strings dos candidatos
-candidato1: .asciiz "C1\n"
-candidato2: .asciiz "C2\n"
-candidato3: .asciiz "C3\n"
+candidato1: .asciiz "C1: "
+candidato2: .asciiz "C2: "
+candidato3: .asciiz "C3: "
 
 # Array de endereços dos nomes dos candidatos
 candidatos: .word candidato1, candidato2, candidato3
 
 votos: .word 0, 0, 0 # C1, C2, C3
 
-msg_digite_voto: .asciiz "Digite seu voto (0-2): \n"
-msg_confirmar: .asciiz "Aperte confirmar (C): \n"
+msg_confirmar: .asciiz "\nAperte confirmar (C): "
 confirma: .byte 'C'
+msg_voto_recebido: .asciiz "\nVoto recebido: "
 msg_resultado: .asciiz "\nResultado da votação:\n"
+
+# Lista de votos predefinida
+lista_de_votos: .word 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1
 
 .text
 .globl main
 main:
-    li $t1, -1
+    li $t0, 0                # Índice da lista de votos
+    li $t1, 23               # Número de votos na lista (23 em vez de 20)
+    la $t2, lista_de_votos   # Endereço da lista de votos
+    lw $t3, ENCERRAR         # Carregar o valor de ENCERRAR
 
 loop: 
+    beq $t0, $t1, end_loop   # Se todos os votos foram processados, fim do loop
+
+    lw $t4, 0($t2)           # Carregar o próximo voto da lista
+    beq $t4, $t3, end_loop   # Se o voto for ENCERRAR, fim do loop
+
+    # Imprimir "Voto recebido: "
     li $v0, 4
-    la $a0, msg_digite_voto
+    la $a0, msg_voto_recebido
+    syscall
+    li $v0, 1
+    move $a0, $t4
     syscall
 
-    li $v0, 5
-    syscall
-    move $t1, $v0
-
-    lw $t0, ENCERRAR
-    beq $t0, $t1, end_loop
-
-    blt $t1, 0, loop
-    bgt $t1, 4, loop
-
-    li $v0, 4
-    la $a0, newline
-    syscall
-
+    # Imprimir mensagem de confirmação
     li $v0, 4
     la $a0, msg_confirmar
     syscall
 
-    li $v0, 12
-    syscall
-    li $t2, 'C'
-    bne $v0, $t2, loop
-
-    sll $t2, $t1, 2
-    la $t3, votos
-    add $t3, $t3, $t2
-    lw $t4, 0($t3)
-    addi $t4, $t4, 1
-    sw $t4, 0($t3)
+    # Simular confirmação com 'C'
+    lb $t5, confirma
+    li $t6, 'C'
+    beq $t5, $t6, confirmar
 
     j loop
 
+confirmar:
+    sll $t7, $t4, 2          # Calcular o deslocamento no array de votos
+    la $t8, votos            # Carregar o endereço base do array de votos
+    add $t9, $t8, $t7        # Calcular o endereço específico do candidato
+    lw $t4, 0($t9)           # Carregar o valor atual dos votos
+    addi $t4, $t4, 1         # Incrementar o voto
+    sw $t4, 0($t9)           # Salvar o voto atualizado
+
+    addi $t2, $t2, 4         # Avançar para o próximo voto na lista
+    addi $t0, $t0, 1         # Incrementar o índice do loop
+    j loop                   # Repetir o loop
+
 end_loop:
+    # Imprimir resultado da votação
     li $v0, 4
     la $a0, msg_resultado
     syscall
@@ -79,8 +87,6 @@ print_loop:
     # Carregar o endereço do nome do candidato a partir do array candidatos
     sll $t2, $t0, 2         # t2 = t0 * 4 (tamanho de palavra)
     la $t3, candidatos      # Carrega o endereço base do array de candidatos
-    lw $a0, 0($t3)          # Carrega o endereço da string do candidato
-    lw $a0, 0($t3)          # Carrega o endereço do ponteiro de string
     add $t3, $t3, $t2       # Adiciona o deslocamento do índice ao endereço base
     lw $a0, 0($t3)          # Carrega o ponteiro da string
     li $v0, 4               # Prepara syscall para imprimir string
