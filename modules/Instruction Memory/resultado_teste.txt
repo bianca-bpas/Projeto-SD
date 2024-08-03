@@ -1,0 +1,35 @@
+At time                    0, Address = 00000000, Instr = 0000000f
+At time                   20, Address = 00000004, Instr = 0000003f
+At time                   30, Address = 00000008, Instr = 0000007f
+At time                   40, Address = 0000000c, Instr = 000000ff
+At time                   50, Address = 00000010, Instr = 000001ff
+testbench.sv:44: $finish called at 60 (1s)
+Done
+
+No tempo 0, o endereço Address é 00000000 e a instrução lida Instr é 0000000f.
+Isso corresponde à primeira linha do arquivo instructions.mem:
+
+    00000000000000000000000000001111 // Instrução no endereço 0
+
+
+No tempo 20, o endereço Address é 00000004 e a instrução lida Instr é 0000003f.
+Isso corresponde à segunda linha do arquivo instructions.mem:
+
+    00000000000000000000000000111111 // Instrução no endereço 4
+
+No tempo 30, o endereço Address é 00000008 e a instrução lida Instr é 0000007f.
+Isso corresponde à terceira linha do arquivo instructions.mem:
+
+    00000000000000000000000001111111 // Instrução no endereço 8
+
+No tempo 40, o endereço Address é 0000000c e a instrução lida Instr é 000000ff.
+Isso corresponde à quarta linha do arquivo instructions.mem:
+
+    00000000000000000000000011111111 // Instrução no endereço 12
+
+No tempo 50, o endereço Address é 00000010 e a instrução lida Instr é 000001ff.
+Isso corresponde à quinta linha do arquivo instructions.mem:
+
+    00000000000000000000000111111111 // Instrução no endereço 16
+
+No tempo 60, a simulação termina.
