@@ -1,0 +1,58 @@
+At time                    0, ALUControl: 000, SrcA: 00000000, SrcB: 00000000, ALUResult: 00000000, Zero: 1
+At time                10000, ALUControl: 000, SrcA: a5a5a5a5, SrcB: 5a5a5a5a, ALUResult: 00000000, Zero: 1
+At time                20000, ALUControl: 001, SrcA: a5a5a5a5, SrcB: 5a5a5a5a, ALUResult: ffffffff, Zero: 0
+At time                30000, ALUControl: 010, SrcA: 0000000f, SrcB: 00000001, ALUResult: 00000010, Zero: 0
+At time                40000, ALUControl: 110, SrcA: 0000000f, SrcB: 0000000f, ALUResult: 00000000, Zero: 1
+At time                50000, ALUControl: 111, SrcA: 0000000a, SrcB: 0000000f, ALUResult: 00000001, Zero: 0
+At time                60000, ALUControl: 100, SrcA: a5a5a5a5, SrcB: 5a5a5a5a, ALUResult: 00000000, Zero: 1
+At time                70000, ALUControl: 011, SrcA: a5a5a5a5, SrcB: 5a5a5a5a, ALUResult: 00000000, Zero: 1
+testbench.sv:68: $finish called at 80000 (1ps)
+Done
+
+Tempo: 0 ns, ALUControl: 000 (AND), SrcA: 00000000, SrcB: 00000000
+
+    ALUResult: 00000000 (AND de 0 e 0)
+    Zero: 1 (resultado é zero)
+    Comentário: O resultado está correto, pois a operação AND entre 0 e 0 é 0.
+
+Tempo: 10000 ns, ALUControl: 000 (AND), SrcA: a5a5a5a5, SrcB: 5a5a5a5a
+
+    ALUResult: 00000000
+    Zero: 1 (resultado é zero)
+    Comentário: O resultado de a5a5a5a5 & 5a5a5a5a deveria ser 00000000, indicando que não há bits comuns entre as entradas. Portanto, o resultado está correto.
+
+Tempo: 20000 ns, ALUControl: 001 (OR), SrcA: a5a5a5a5, SrcB: 5a5a5a5a
+
+    ALUResult: ffffffff (OR de a5a5a5a5 e 5a5a5a5a)
+    Zero: 0 (resultado não é zero)
+    Comentário: O resultado está correto, pois a operação OR entre a5a5a5a5 e 5a5a5a5a resulta em ffffffff.
+
+Tempo: 30000 ns, ALUControl: 010 (ADD), SrcA: 0000000f, SrcB: 00000001
+
+    ALUResult: 00000010 (soma de 0f e 01)
+    Zero: 0 (resultado não é zero)
+    Comentário: A soma de 0f (15 em decimal) e 01 (1 em decimal) é 10 (16 em decimal), então o resultado está correto.
+
+Tempo: 40000 ns, ALUControl: 110 (SUB), SrcA: 0000000f, SrcB: 0000000f
+
+    ALUResult: 00000000 (subtração de 0f e 0f)
+    Zero: 1 (resultado é zero)
+    Comentário: A subtração de 0f menos 0f resulta em 00000000, então o resultado está correto.
+
+Tempo: 50000 ns, ALUControl: 111 (SLT), SrcA: 0000000a, SrcB: 0000000f
+
+    ALUResult: 00000001 (0a é menor que 0f)
+    Zero: 0 (resultado não é zero)
+    Comentário: Como 0a (10 em decimal) é menor que 0f (15 em decimal), ALUResult é 1. O resultado está correto.
+
+Tempo: 60000 ns, ALUControl: 100 (NOR), SrcA: a5a5a5a5, SrcB: 5a5a5a5a
+
+    ALUResult: 00000000 (NOR de a5a5a5a5 e 5a5a5a5a)
+    Zero: 1 (resultado é zero)
+    Comentário: A operação NOR entre a5a5a5a5 e 5a5a5a5a deveria resultar em 00000000, então o resultado está correto.
+
+Tempo: 70000 ns, ALUControl: 011 (não definido), SrcA: a5a5a5a5, SrcB: 5a5a5a5a
+
+    ALUResult: 00000000 (operação não definida)
+    Zero: 1 (resultado é zero)
+    Comentário: Para uma operação não definida, a ALU produz o valor padrão 00000000, que está correto de acordo com o comportamento esperado no caso default.
