@@ -1,0 +1,40 @@
+At time                    0, clk = 0, PCNext = 00000000, PC = 00000000
+At time                    5, PC updated to 00000000
+At time                    5, clk = 1, PCNext = 00000000, PC = 00000000
+At time                   10, clk = 0, PCNext = 00000004, PC = 00000000
+At time                   15, PC updated to 00000000
+At time                   15, clk = 1, PCNext = 00000004, PC = 00000004
+At time                   20, clk = 0, PCNext = 00000008, PC = 00000004
+At time                   25, PC updated to 00000004
+At time                   25, clk = 1, PCNext = 00000008, PC = 00000008
+At time                   30, clk = 0, PCNext = 0000000c, PC = 00000008
+At time                   35, PC updated to 00000008
+At time                   35, clk = 1, PCNext = 0000000c, PC = 0000000c
+At time                   40, clk = 0, PCNext = 00000010, PC = 0000000c
+At time                   45, PC updated to 0000000c
+At time                   45, clk = 1, PCNext = 00000010, PC = 00000010
+testbench.sv:48: $finish called at 50 (1s)
+At time                   50, clk = 0, PCNext = 00000010, PC = 00000010
+Done
+
+    No tempo 0, clk é 0 e PCNext é 0. PC é inicializado em 0 conforme esperado.
+
+    No tempo 5, o clock sobe (clk = 1), e PC é atualizado para 0, confirmado pela mensagem "PC updated to 00000000".
+
+    No tempo 10, PCNext é alterado para 00000004.
+
+    No tempo 15, o clock sobe (clk = 1), e PC é atualizado para 00000004.
+
+    No tempo 20, PCNext é alterado para 00000008.
+
+    No tempo 25, o clock sobe (clk = 1), e PC é atualizado para 00000008.
+
+    No tempo 30, PCNext é alterado para 0000000c.
+
+    No tempo 35, o clock sobe (clk = 1), e PC é atualizado para 0000000c.
+
+    No tempo 40, PCNext é alterado para 00000010.
+
+    No tempo 45, o clock sobe (clk = 1), e PC é atualizado para 00000010.
+
+    No tempo 50, a simulação termina com o valor final de PC sendo 00000010, conforme esperado.
