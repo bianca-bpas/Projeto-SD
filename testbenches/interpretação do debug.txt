@@ -18,4 +18,13 @@ Control Unit
 Certifique-se de que os sinais de controle estejam sendo corretamente configurados para cada instrução:
 ALU Control Unit
 
-A unidade de controle da ALU pode precisar de ajustes para garantir que ALUControl seja definido corretamente com base em ALUOp e Funct
+No tempo 0, os sinais iniciais são estabelecidos, mas ALUControl e SrcB mostram valores indefinidos (xxx e xxxxxxxx). No tempo 10000, a simulação começa a processar instruções:
+
+    PC (Program Counter) é 0x00000000 e a instrução (Instr) é 0x00010820.
+    RegWrite é 1, indicando uma escrita em registrador.
+    ALUResult e WriteData são 0, indicando que os resultados da ALU estão corretos, mas não há dados significativos sendo escritos ainda.
+
+A simulação progride e processa as instruções:
+
+    00010820, 00021020, 00201820, 00a12020, 10600001 em tempos diferentes.
+    Todas as instruções resultam em ALUResult sendo 0 e WriteData sendo 0, o que pode indicar que as operações da ALU são NO-OP ou que os dados nos registradores envolvidos são 0.
