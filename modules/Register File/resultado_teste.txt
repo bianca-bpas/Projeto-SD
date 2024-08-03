@@ -1,0 +1,39 @@
+At time                    0, ReadReg1:  0, ReadData1: 00000000, ReadReg2:  0, ReadData2: 00000000
+At time                15000, writing data abcd1234 to register  5
+At time                30000, ReadReg1:  5, ReadData1: abcd1234, ReadReg2:  0, ReadData2: 00000000
+At time                45000, writing data 12345678 to register 10
+At time                60000, ReadReg1: 10, ReadData1: 12345678, ReadReg2:  5, ReadData2: abcd1234
+At time                75000, writing data 87654321 to register  5
+At time                75000, ReadReg1: 10, ReadData1: 12345678, ReadReg2:  5, ReadData2: 87654321
+testbench.sv:84: $finish called at 90000 (1ps)
+At time                90000, ReadReg1:  5, ReadData1: 87654321, ReadReg2: 10, ReadData2: 12345678
+Done
+
+Tempo 0:
+
+    ReadReg1 e ReadReg2 estão configurados para 0, e os dados lidos (ReadData1 e ReadData2) são ambos 00000000, que é o valor inicial para todos os registradores.
+
+Tempo 15000:
+
+    Escrevendo o valor abcd1234 no registrador 5. O RegWrite foi ativado, o que permitiu a escrita. Isso é evidenciado pela mensagem de que o dado foi escrito.
+
+Tempo 30000:
+
+    Lendo do registrador 5 (ReadReg1 = 5) e do registrador 0 (ReadReg2 = 0). O valor lido de ReadData1 é abcd1234, confirmando que a escrita foi bem-sucedida. ReadData2 permanece 00000000 porque o registrador 0 não foi alterado.
+
+Tempo 45000:
+
+    Escrevendo o valor 12345678 no registrador 10. O RegWrite foi ativado novamente para permitir essa escrita.
+
+Tempo 60000:
+
+    Lendo do registrador 10 (ReadReg1 = 10) e do registrador 5 (ReadReg2 = 5). Os valores lidos são 12345678 para ReadData1 e abcd1234 para ReadData2, confirmando que os valores escritos anteriormente foram preservados.
+
+Tempo 75000:
+
+    Atualizando o valor do registrador 5 para 87654321. Isso é confirmado pela mensagem de escrita no log.
+    Simultaneamente, o valor de ReadData1 é 12345678 (do registrador 10), e ReadData2 é 87654321 (do registrador 5 atualizado), mostrando que a leitura ocorre após a escrita.
+
+Tempo 90000:
+
+    Leitura final antes do término da simulação, confirmando que os valores nos registradores 5 e 10 são 87654321 e 12345678, respectivamente.

@@ -1,3 +1,10 @@
+At time                    0, Op: 000000, Funct: 100000, ALUOp: 10, MemtoReg: 0, MemWrite: 0, Branch: 0, ALUSrc: 0, RegDst: 1, RegWrite: 1
+At time                10000, Op: 100011, Funct: xxxxxx, ALUOp: 00, MemtoReg: 1, MemWrite: 0, Branch: 0, ALUSrc: 1, RegDst: 0, RegWrite: 1
+At time                20000, Op: 101011, Funct: xxxxxx, ALUOp: 00, MemtoReg: 0, MemWrite: 1, Branch: 0, ALUSrc: 1, RegDst: 0, RegWrite: 0
+At time                30000, Op: 000100, Funct: xxxxxx, ALUOp: 01, MemtoReg: 0, MemWrite: 0, Branch: 1, ALUSrc: 0, RegDst: 0, RegWrite: 0
+testbench.sv:56: $finish called at 40000 (1ps)
+Done
+
 Instrução: R-type (op = 000000)
 Funct: 100000 (ADD)
 Sinais de Controle:
