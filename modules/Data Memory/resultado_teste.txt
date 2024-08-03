@@ -1,0 +1,35 @@
+At time                    0, clk = 0, MemWrite = 0, Address = 00000000, WriteData = 00000000, ReadData = xxxxxxxx
+At time                    5, clk = 1, MemWrite = 0, Address = 00000000, WriteData = 00000000, ReadData = xxxxxxxx
+At time                   10, clk = 0, MemWrite = 1, Address = 00000000, WriteData = deadbeef, ReadData = xxxxxxxx
+At time                   15, writing data deadbeef to address 00000000
+At time                   15, clk = 1, MemWrite = 1, Address = 00000000, WriteData = deadbeef, ReadData = deadbeef
+At time                   20, clk = 0, MemWrite = 0, Address = 00000000, WriteData = deadbeef, ReadData = deadbeef
+At time                   25, clk = 1, MemWrite = 0, Address = 00000000, WriteData = deadbeef, ReadData = deadbeef
+At time                   30, clk = 0, MemWrite = 0, Address = 00000000, WriteData = deadbeef, ReadData = deadbeef
+At time                   35, clk = 1, MemWrite = 0, Address = 00000000, WriteData = deadbeef, ReadData = deadbeef
+At time                   40, clk = 0, MemWrite = 1, Address = 00000004, WriteData = cafebabe, ReadData = xxxxxxxx
+At time                   45, writing data cafebabe to address 00000004
+At time                   45, clk = 1, MemWrite = 1, Address = 00000004, WriteData = cafebabe, ReadData = cafebabe
+At time                   50, clk = 0, MemWrite = 0, Address = 00000004, WriteData = cafebabe, ReadData = cafebabe
+At time                   55, clk = 1, MemWrite = 0, Address = 00000004, WriteData = cafebabe, ReadData = cafebabe
+At time                   60, clk = 0, MemWrite = 0, Address = 00000004, WriteData = cafebabe, ReadData = cafebabe
+At time                   65, clk = 1, MemWrite = 0, Address = 00000004, WriteData = cafebabe, ReadData = cafebabe
+At time                   70, clk = 0, MemWrite = 0, Address = 00000000, WriteData = cafebabe, ReadData = deadbeef
+At time                   75, clk = 1, MemWrite = 0, Address = 00000000, WriteData = cafebabe, ReadData = deadbeef
+testbench.sv:72: $finish called at 80 (1s)
+At time                   80, clk = 0, MemWrite = 0, Address = 00000000, WriteData = cafebabe, ReadData = deadbeef
+Done
+
+    No tempo 0 e 5, o sinal clk está alternando entre 0 e 1. MemWrite está desativado, Address e WriteData estão em 0. ReadData não é válido ainda, indicado por xxxxxxxx.
+
+    No tempo 10, MemWrite é ativado para escrever deadbeef no endereço 00000000. No tempo 15, a escrita ocorre, confirmada pela mensagem writing data deadbeef to address 00000000. ReadData agora contém deadbeef.
+
+    De 20 a 35, MemWrite está desativado, e estamos lendo do endereço 00000000, que contém deadbeef.
+
+    No tempo 40, MemWrite é ativado para escrever cafebabe no endereço 00000004. No tempo 45, a escrita ocorre, confirmada pela mensagem writing data cafebabe to address 00000004. ReadData agora contém cafebabe.
+
+    De 50 a 65, MemWrite está desativado, e estamos lendo do endereço 00000004, que contém cafebabe.
+
+    No tempo 70 e 75, MemWrite está desativado, e estamos lendo do endereço 00000000 novamente, que ainda contém deadbeef.
+
+    No tempo 80, a simulação termina. ReadData mostra deadbeef para o endereço 00000000, conforme esperado.
