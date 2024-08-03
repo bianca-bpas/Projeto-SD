@@ -1,0 +1,11 @@
+Instrução: R-type (op = 000000)
+Funct: 100000 (ADD)
+Sinais de Controle:
+
+    ALUOp: 10 (Indica que a operação ALU será determinada pelo campo Funct)
+    MemtoReg: 0 (O valor a ser escrito no registrador vem da ALU)
+    MemWrite: 0 (Nenhuma operação de escrita na memória)
+    Branch: 0 (Nenhuma operação de branch)
+    ALUSrc: 0 (O segundo operando da ALU vem do registrador)
+    RegDst: 1 (O registrador de destino é rd)
+    RegWrite: 1 (Habilita a escrita no registrador de destino)
