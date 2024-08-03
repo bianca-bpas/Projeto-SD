@@ -7,7 +7,7 @@ reg [5:0] Op;
 reg [5:0] Funct;
 
 // Outputs
-wire [1:0] ALUOp;
+wire [2:0] ALUOp;
 wire MemtoReg;
 wire MemWrite;
 wire Branch;

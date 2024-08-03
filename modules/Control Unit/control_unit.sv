@@ -3,8 +3,8 @@
 module ControlUnit(
     input [5:0] Op, 
     input [5:0] Funct,
-    output reg [1:0] ALUOp,
-    output reg MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite
+    output reg [2:0] ALUOp,
+    output reg MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump
 );
 
 always @(Op or Funct) begin
