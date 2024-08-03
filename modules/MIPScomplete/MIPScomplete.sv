@@ -115,8 +115,9 @@ module MIPScomplete();
 wire clk,
 wire [31:0] PCNext, PC, PCplus4, Adress, Instr, Signlmm, ReadData1, ReadData2, PCBranch, Result, SrcB,ALUResult, ReadData,
 wire [4:0] WriteReg,
-wire RegWrite, RegDst, PCSrc, MemtoReg, MemWrite, Branch, ALUSrc, Zero, shifted,
-wire [2:0] ALUControl
+wire RegWrite, RegDst, MemtoReg, MemWrite, Branch, ALUSrc, Zero, shifted,
+wire [2:0] ALUControl,
+reg  PCSrc
 
 
     Mux muxPC( //OK
@@ -165,7 +166,7 @@ wire [2:0] ALUControl
         .RegWrite(RegWrite), 
     );
 
-    assign PCSrc = Branch and Zero;
+    PCSrc <= Branch && Zero;
 
     Mux mux0(  //OK
         .in0(ReadData2),
