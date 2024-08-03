@@ -70,12 +70,12 @@ assign ReadData2 = RegFile[ReadReg2];
 endmodule
 
 module SignalExtend(
-  	input [15:0] Instr,
-    output [31:0] Signlmm
+    input [15:0] Instr,
+    output reg [31:0] Signlmm
 );
 
 always @(*) begin
-    Signlmm <= {{16{Instr[15]}}, Instr}; // Sign extend the immediate value
+    Signlmm = {{16{Instr[15]}}, Instr}; // Sign extend the immediate value
 end
 
 endmodule
@@ -102,7 +102,7 @@ endmodule
 
 
 
-module Shiftleft(
+module ShiftLeft(
     input [31:0] Signlmm,
     output [31:0] out
 );
@@ -266,122 +266,122 @@ endmodule
 
 /*A partir daqui, fazemos as conexões instanciando os módulos num TopModule, ou seja, o MIPScompleto*/
 
-module MIPScomplete();
-//instanciando "fios"/ conexões
-    wire clk;
-    wire [31:0] PCNext, PC, PCplus4, Address, Instr, Signlmm, ReadData1, ReadData2, PCBranch, Result, SrcB, ALUResult, ReadData;
-    wire [4:0] WriteReg;
-    wire RegWrite, RegDst, MemtoReg, MemWrite, Branch, ALUSrc, Zero;
-    wire [31:0] shifted;
-    wire [2:0] ALUControl;
-    reg PCSrc, Jump;
+module MIPScomplete(
+    input wire clk,
+    input wire reset
+);
 
+// Declaração dos fios e registros
+wire [31:0] PCNext, PC, PCplus4, Address, Instr, Signlmm, ReadData1, ReadData2, PCBranch, Result, SrcB, ALUResult, ReadData;
+wire [4:0] WriteReg;
+wire RegWrite, RegDst, MemtoReg, MemWrite, Branch, ALUSrc, Zero, shifted;
+wire [2:0] ALUControl;
+reg  PCSrc, Jump;
 
-    Mux muxPC( //OK
-        .in0(PCplus4),
-        .in1(PCBranch),
-        .sel(PCSrc),
-        .out(PCNext)
-    );
+// Instanciação dos módulos
+Mux muxPC(
+    .in0(PCplus4),
+    .in1(PCBranch),
+    .sel(PCSrc),
+    .out(PCNext)
+);
 
-    ProgramCounter pc ( //OK
-        .clk(clk),
-        .PCNext(PCNext),
-        .PC(PC)
-    );
+ProgramCounter pc(
+    .clk(clk),
+    .PCNext(PCNext),
+    .PC(PC)
+);
 
-    PCPlus4 pcplus4 ( //OK
-        .pc(PC),
-        .PCplus4(PCplus4)
-    );
+PCPlus4 pcplus4(
+    .pc(PC),
+    .PCplus4(PCplus4)
+);
 
-    InstructionMemory im( //OK
-        .Address(PC),
-        .Instr(Instr)
-    );
+InstructionMemory im(
+    .Address(PC),
+    .Instr(Instr)
+);
 
-    RegisterFile rf( //OK
-        .clk(clk),
-        .RegWrite(RegWrite),
-        .ReadReg1(Instr[25:21]), 
-        .ReadReg2(Instr[20:16]), 
-        .WriteReg(WriteReg),
-        .WriteData(Result), 
-        .ReadData1(ReadData1), 
-        .ReadData2(ReadData2)
-    );
+RegisterFile rf(
+    .clk(clk),
+    .RegWrite(RegWrite),
+    .ReadReg1(Instr[25:21]), 
+    .ReadReg2(Instr[20:16]), 
+    .WriteReg(WriteReg),
+    .WriteData(Result), 
+    .ReadData1(ReadData1), 
+    .ReadData2(ReadData2)
+);
 
-    ControlUnit cu( //OK
-        .Op(Instr[31:26]), 
-        .Funct(Instr[5:0]),
-        .ALUControl(ALUControl),
-        .MemtoReg(MemtoReg), 
-        .MemWrite(MemWrite), 
-        .Branch(Branch), 
-        .ALUSrc(ALUSrc), 
-        .RegDst(RegDst), 
-        .RegWrite(RegWrite), 
-        .Jump(Jump)
-    );
+ControlUnit cu(
+    .Op(Instr[31:26]), 
+    .Funct(Instr[5:0]),
+    .ALUOp(ALUControl),
+    .MemtoReg(MemtoReg), 
+    .MemWrite(MemWrite), 
+    .Branch(Branch), 
+    .ALUSrc(ALUSrc), 
+    .RegDst(RegDst), 
+    .RegWrite(RegWrite), 
+    .Jump(Jump)
+);
 
+Mux mux0(
+    .in0(ReadData2),
+    .in1(Signlmm),
+    .sel(ALUSrc),
+    .out(SrcB)
+);
 
-    Mux mux0(  //OK
-        .in0(ReadData2),
-        .in1(Signlmm),
-        .sel(ALUSrc),
-        .out(SrcB)
-    );
+ALU alu(
+    .SrcA(ReadData1), 
+    .SrcB(SrcB),
+    .ALUControl(ALUControl),
+    .ALUResult(ALUResult),
+    .Zero(Zero)
+);
 
-    ALU alu( //OK 
-        .SrcA(ReadData1), 
-        .SrcB(SrcB),
-        .ALUControl(ALUControl),
-        .ALUResult(ALUResult),
-        .Zero(Zero)
-    );
+Mux5Bits mux5b(
+    .in0(Instr[20:16]),
+    .in1(Instr[15:11]),
+    .sel(RegDst),
+    .out(WriteReg)
+);
 
-    Mux5Bits mux5b(//OK
-        .in0(Instr[20:16]),
-        .in1(Instr[15:11]),
-        .sel(RegDst),
-        .out(WriteReg)
-    );
+SignalExtend SE(
+    .Instr(Instr[15:0]),
+    .Signlmm(Signlmm)
+);
 
-    SignalExtend SE( //OK
-    	.Instr(Instr[15:0]),
-      	.Signlmm(Signlmm)
-    );
+ShiftLeft sf(
+    .Signlmm(Signlmm),
+    .out(shifted)
+);
 
-    Shiftleft sf( // OK
-        .Signlmm(Signlmm),
-        .out(shifted)
-    );
+PCBranch pcBranch(
+    .PCplus4(PCplus4),
+    .shifted(shifted),
+    .pcbranch(PCBranch)
+);
 
-    PCBranch pcBranch( //OK
-        .PCplus4(PCplus4),
-        .shifted(shifted),
-        .pcbranch(PCBranch)
-    );
+DataMemory dm(
+    .clk(clk),
+    .MemWrite(MemWrite),
+    .Address(ALUResult), 
+    .WriteData(ReadData2),
+    .ReadData(ReadData)
+);
 
-    DataMemory dm( // OK
+Mux mux1(
+    .in0(ALUResult),
+    .in1(ReadData),
+    .sel(MemtoReg),
+    .out(Result)
+);
 
-        .clk(clk),
-        .MemWrite(MemWrite),
-        .Address(ALUResult), 
-        .WriteData(ReadData2),
-        .ReadData(ReadData)
-    );
+// Lógica combinacional para PCSrc
+always @(*) begin
+    PCSrc = Branch && Zero;
+end
 
-    Mux mux1( // OK
-        .in0(ALUResult),
-        .in1(ReadData),
-        .sel(MemtoReg),
-        .out(Result)
-    );
-
-  	 // Lógica combinacional para PCSrc
-    always @(*) begin
-        PCSrc = Branch && Zero;
-    end
-  
 endmodule
