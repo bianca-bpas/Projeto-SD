@@ -1,63 +1,93 @@
 `timescale 1ns / 1ps
 
-module MIPS_Testbench;
+module tb_MIPScomplete();
 
-// Declaração de sinais para o testbench
-reg clk;
-wire [31:0] PCNext, PC, PCplus4, Instr, Signlmm, ReadData1, ReadData2, PCBranch, Result, SrcB, ALUResult, ReadData;
-wire [4:0] WriteReg;
-wire RegWrite, RegDst, MemtoReg, MemWrite, Branch, ALUSrc, Zero, Jump;
-wire [31:0] shifted;
-wire [2:0] ALUControl;
-wire PCSrc;
+    reg clk;
+    wire [31:0] PCNext;
+    wire [31:0] PC;
+    wire [31:0] PCplus4;
+    wire [31:0] Instr;
+    wire [31:0] Signlmm;
+    wire [31:0] ReadData1;
+    wire [31:0] ReadData2;
+    wire [31:0] PCBranch;
+    wire [31:0] Result;
+    wire [31:0] SrcB;
+    wire [31:0] ALUResult;
+    wire [31:0] ReadData;
+    wire [4:0] WriteReg;
+    wire RegWrite;
+    wire RegDst;
+    wire MemtoReg;
+    wire MemWrite;
+    wire Branch;
+    wire ALUSrc;
+    wire Zero;
+    wire [31:0] shifted;
+    wire [2:0] ALUControl;
+    wire PCSrc;
+    wire Jump;
 
-// Instancia o módulo MIPS completo
-MIPScomplete uut (
-    .clk(clk),
-    .PCNext(PCNext),
-    .PC(PC),
-    .PCplus4(PCplus4),
-    .Instr(Instr),
-    .Signlmm(Signlmm),
-    .ReadData1(ReadData1),
-    .ReadData2(ReadData2),
-    .PCBranch(PCBranch),
-    .Result(Result),
-    .SrcB(SrcB),
-    .ALUResult(ALUResult),
-    .ReadData(ReadData),
-    .WriteReg(WriteReg),
-    .RegWrite(RegWrite),
-    .RegDst(RegDst),
-    .MemtoReg(MemtoReg),
-    .MemWrite(MemWrite),
-    .Branch(Branch),
-    .ALUSrc(ALUSrc),
-    .Zero(Zero),
-    .shifted(shifted),
-    .ALUControl(ALUControl),
-    .PCSrc(PCSrc),
-    .Jump(Jump)
-);
+    // Instancia o MIPS completo
+    MIPScomplete uut (
+        .clk(clk),
+        .PCNext(PCNext),
+        .PC(PC),
+        .PCplus4(PCplus4),
+        .Instr(Instr),
+        .Signlmm(Signlmm),
+        .ReadData1(ReadData1),
+        .ReadData2(ReadData2),
+        .PCBranch(PCBranch),
+        .Result(Result),
+        .SrcB(SrcB),
+        .ALUResult(ALUResult),
+        .ReadData(ReadData),
+        .WriteReg(WriteReg),
+        .RegWrite(RegWrite),
+        .RegDst(RegDst),
+        .MemtoReg(MemtoReg),
+        .MemWrite(MemWrite),
+        .Branch(Branch),
+        .ALUSrc(ALUSrc),
+        .Zero(Zero),
+        .shifted(shifted),
+        .ALUControl(ALUControl),
+        .PCSrc(PCSrc),
+        .Jump(Jump)
+    );
 
-// Gera o sinal de clock
-initial begin
-    clk = 0;
-    forever #5 clk = ~clk; // Gera um clock com período de 10ns
-end
+    // Clock generation
+    always begin
+        clk = 1'b0;
+        #5;
+        clk = 1'b1;
+        #5;
+    end
 
-// Bloco de inicialização e simulação
-initial begin
-    // Inicializa a simulação e o sistema
-    $display("Iniciando simulação");
-    $monitor("Tempo: %0t | PC: %h | Instr: %h | ALUResult: %h | ReadData: %h | RegWrite: %b | MemWrite: %b | Zero: %b", $time, PC, Instr, ALUResult, ReadData, RegWrite, MemWrite, Zero);
+    // Inicialização e monitoramento
+    initial begin
+        // Inicializa sinais
+        $display("Time\tclk\tPC\tInstr\tRegWrite\tWriteReg\tWriteData\tMemWrite\tMemAddr\tMemData\tReadData");
 
-    // Carrega o arquivo de instruções para a memória de instruções
-    $readmemh("instructions.mem", uut.im.Memory);
+        // Monitoramento de sinais críticos
+        $monitor("%g\t%b\t%h\t%h\t%b\t%h\t%h\t%b\t%h\t%h\t%h", $time, clk, PC, Instr, RegWrite, WriteReg, Result, MemWrite, ALUResult, ReadData2, ReadData);
 
-    // Tempo de simulação (em ns)
-    #200;
-    $finish;
-end
+        // Inicializa a memória de instruções
+        // (Defina as instruções aqui ou utilize um arquivo .mem)
+        // Por exemplo:
+        /*
+        // Exemplo de instruções (Use a inicialização da memória de instruções conforme necessário)
+        // lw $1, 1($0)
+        // add $3, $1, $2
+        // sw $3, 1($0)
+        // beq $1, $2, 2
+        // j 0
+        */
+
+        // Executa a simulação por um período de tempo
+        #200;
+        $finish;
+    end
 
 endmodule
