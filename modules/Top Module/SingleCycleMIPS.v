@@ -175,20 +175,35 @@ module DataMemory(
     output reg [31:0] ReadData
 );
 
-    reg [31:0] Memory [0:7]; // Ajuste conforme necessário para o tamanho da memória
+    reg [31:0] Memory [0:7]; // Memória com 8 palavras de 32 bits
+
+    // Constante para o tamanho máximo da memória
+    parameter MEMORY_SIZE = 8;
 
     always @(posedge clk) begin
         if (MemWrite) begin
-            $display("At time %t, writing data %h to address %h", $time, WriteData, Address);
-            Memory[Address >> 2] <= WriteData; // Endereço ajustado para palavras
+            // Verificação de limites de escrita
+            if (Address >> 2 < MEMORY_SIZE) begin
+                $display("At time %t, writing data %h to address %h", $time, WriteData, Address);
+                Memory[Address >> 2] <= WriteData; // Endereço ajustado para palavras
+            end else begin
+                $display("At time %t, ERROR: Write address %h out of bounds", $time, Address);
+            end
         end
     end
 
-    always @(Address) begin
-        ReadData = Memory[Address >> 2]; // Endereço ajustado para palavras
+  always @(Address) begin
+        // Verificação de limites de leitura
+        if (Address >> 2 < MEMORY_SIZE) begin
+            ReadData = Memory[Address >> 2]; // Endereço ajustado para palavras
+        end else begin
+            $display("At time %t, ERROR: Read address %h out of bounds", $time, Address);
+            ReadData = 32'b0; // Valor padrão em caso de erro
+        end
     end
 
 endmodule
+
 
 
 `timescale 1ns / 1ps
