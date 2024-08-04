@@ -1,4 +1,6 @@
 `timescale 1ns / 1ps
+
+/*declaração de todos módulos que serão usados*/
 module ProgramCounter(
     input clk,
     input [31:0] PCNext,
@@ -16,79 +18,26 @@ end
 
 endmodule
 
+
 `timescale 1ns / 1ps
 module InstructionMemory(
     input [31:0] Address,
-    output [31:0] Instr
+    output reg [31:0] Instr
 );
 
-  reg [31:0] Memory [0:4];
+    // Memória de instruções com 1024 palavras de 32 bits
+    reg [31:0] Memory [0:65];
 
-initial begin
-  $readmemb("instructions.mem", Memory);
-end
+    // Inicializa a memória a partir do arquivo .mem
+    initial begin
+        // Carrega o conteúdo do arquivo instructions.mem para a memória
+        $readmemh("instructions.mem", Memory);
+    end
 
-assign Instr = Memory[Address >> 2];
-
-endmodule
-
-`timescale 1ns / 1ps
-module ControlUnit(
-    input [5:0] Op, 
-    input [5:0] Funct,
-  	output reg [2:0] ALUOp,
-    output reg MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump
-);
-
-always @(Op or Funct) begin
-    case (Op)
-        6'b000000: begin // R-type
-            RegDst <= 1;
-            ALUSrc <= 0;
-            MemtoReg <= 0;
-            RegWrite <= 1;
-            MemWrite <= 0;
-            Branch <= 0;
-            ALUOp <= 2'b10;
-        end
-        6'b100011: begin // LW (Load Word)
-            RegDst <= 0;
-            ALUSrc <= 1;
-            MemtoReg <= 1;
-            RegWrite <= 1;
-            MemWrite <= 0;
-            Branch <= 0;
-            ALUOp <= 2'b00; // ADD
-        end
-        6'b101011: begin // SW (Store Word)
-            RegDst <= 0;
-            ALUSrc <= 1;
-            MemtoReg <= 0;
-            RegWrite <= 0;
-            MemWrite <= 1;
-            Branch <= 0;
-            ALUOp <= 2'b00; // ADD
-        end
-        6'b000100: begin // BEQ (Branch if Equal)
-            RegDst <= 0;
-            ALUSrc <= 0;
-            MemtoReg <= 0;
-            RegWrite <= 0;
-            MemWrite <= 0;
-            Branch <= 1;
-            ALUOp <= 2'b01; // SUB
-        end
-        default: begin
-            RegDst <= 0;
-            ALUSrc <= 0;
-            MemtoReg <= 0;
-            RegWrite <= 0;
-            MemWrite <= 0;
-            Branch <= 0;
-            ALUOp <= 2'b00;
-        end
-    endcase
-end
+    always @(Address) begin
+        // Lê a instrução no endereço fornecido
+        Instr = Memory[Address >> 2]; // Endereço alinhado para palavras
+    end
 
 endmodule
 
@@ -123,6 +72,72 @@ assign ReadData2 = RegFile[ReadReg2];
 
 endmodule
 
+
+`timescale 1ns / 1ps
+module SignalExtend(
+    input [15:0] Instr,
+    output reg [31:0] Signlmm
+);
+
+always @(*) begin
+    Signlmm = {{16{Instr[15]}}, Instr}; // Sign extend the immediate value
+end
+
+endmodule
+
+module PCPlus4(
+    input [31:0] pc,
+    output [31:0] PCplus4
+);
+
+assign PCplus4 = pc + 4;
+
+endmodule
+
+
+`timescale 1ns / 1ps
+module PCBranch(
+    input [31:0] PCplus4, shifted,
+    output [31:0] pcbranch
+);
+
+assign pcbranch = PCplus4 + shifted;
+
+endmodule
+
+module Shiftleft(
+    input [31:0] Signlmm,
+    output [31:0] out
+);
+
+assign out = Signlmm << 2;
+
+endmodule
+
+`timescale 1ns / 1ps
+module Mux(
+    input wire [31:0] in0,
+    input wire [31:0] in1,
+    input wire sel,
+    output wire [31:0] out
+);
+
+assign out = sel ? in1 : in0;
+
+endmodule
+
+`timescale 1ns / 1ps
+module Mux5Bits(
+    input wire [4:0] in0,
+    input wire [4:0] in1,
+    input wire sel,
+    output wire [4:0] out
+);
+
+assign out = sel ? in1 : in0;
+
+endmodule
+
 `timescale 1ns / 1ps
 module ALU(
     input [31:0] SrcA, SrcB,
@@ -142,106 +157,256 @@ always @(*) begin
         default: ALUResult = 32'b0;   // Default to zero
     endcase
 
-    // Monitor ALU operations
-    $display("At time %t, ALUControl: %b, SrcA: %h, SrcB: %h, ALUResult: %h, Zero: %b",
-             $time, ALUControl, SrcA, SrcB, ALUResult, Zero);
+    $display("At time %t, ALUControl: %b, SrcA: %h, SrcB: %h, ALUResult: %h, Zero: %b", $time, ALUControl, SrcA, SrcB, ALUResult, Zero);
 end
 
 assign Zero = (ALUResult == 0);
 
 endmodule
 
+
 `timescale 1ns / 1ps
 module DataMemory(
     input clk,
     input MemWrite,
-    input [31:0] Address, WriteData,
-    output [31:0] ReadData
+    input [31:0] Address, 
+    input [31:0] WriteData,
+    output reg [31:0] ReadData
 );
 
-reg [31:0] Memory [1023:0];
+    reg [31:0] Memory [0:7]; // Ajuste conforme necessário para o tamanho da memória
 
-always @(posedge clk) begin
-    if (MemWrite) begin
-        $display("At time %t, writing data %h to address %h", $time, WriteData, Address);
-        Memory[Address >> 2] <= WriteData;
+    always @(posedge clk) begin
+        if (MemWrite) begin
+            $display("At time %t, writing data %h to address %h", $time, WriteData, Address);
+            Memory[Address >> 2] <= WriteData; // Endereço ajustado para palavras
+        end
     end
-end
 
-assign ReadData = Memory[Address >> 2];
+    always @(Address) begin
+        ReadData = Memory[Address >> 2]; // Endereço ajustado para palavras
+    end
 
 endmodule
 
 
 `timescale 1ns / 1ps
-module TopModule(
-    input clk
+module ControlUnit(
+    input [5:0] Op, 
+    input [5:0] Funct,
+    output reg [2:0] ALUOp,
+    output reg MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump
 );
 
-// Define signals
-wire [31:0] PC, Instr, ReadData1, ReadData2, ALUResult, MemData, SignImm;
-wire [4:0] WriteReg;
-wire [2:0] ALUOp;
-wire MemtoReg, MemWrite, Branch, ALUSrc, RegDst, RegWrite, Jump, Zero;
-wire [31:0] PCNext, PCBranch, PCJump;
+always @(*) begin
+    // Default values to prevent latches and undefined signals
+    RegDst <= 0;
+    ALUSrc <= 0;
+    MemtoReg <= 0;
+    RegWrite <= 0;
+    MemWrite <= 0;
+    Branch <= 0;
+    ALUOp <= 3'b000;
+    Jump <= 0;
+    
+    case (Op)
+        6'b000000: begin // R-type
+            RegDst <= 1;
+            ALUSrc <= 0;
+            MemtoReg <= 0;
+            RegWrite <= 1;
+            MemWrite <= 0;
+            Branch <= 0;
+            ALUOp <= 3'b010;
+            Jump <= 0;
+        end
+        6'b100011: begin // LW (Load Word)
+            RegDst <= 0;
+            ALUSrc <= 1;
+            MemtoReg <= 1;
+            RegWrite <= 1;
+            MemWrite <= 0;
+            Branch <= 0;
+            ALUOp <= 3'b010; // ADD
+            Jump <= 0;
+        end
+        6'b101011: begin // SW (Store Word)
+            RegDst <= 0;
+            ALUSrc <= 1;
+            MemtoReg <= 0;
+            RegWrite <= 0;
+            MemWrite <= 1;
+            Branch <= 0;
+            ALUOp <= 3'b010; // ADD
+            Jump <= 0;
+        end
+        6'b000100: begin // BEQ (Branch if Equal)
+            RegDst <= 0;
+            ALUSrc <= 0;
+            MemtoReg <= 0;
+            RegWrite <= 0;
+            MemWrite <= 0;
+            Branch <= 1;
+            ALUOp <= 3'b110; // SUB
+            Jump <= 0;
+        end
+        6'b000010: begin // JUMP
+            RegDst <= 0;
+            ALUSrc <= 0;
+            MemtoReg <= 0;
+            RegWrite <= 0;
+            MemWrite <= 0;
+            Branch <= 0;
+            ALUOp <= 3'b000;
+            Jump <= 1;
+        end
+        default: begin
+            // Default values already set above
+        end
+    endcase
+end
 
-// Instantiate modules
-ProgramCounter pc(
-    .clk(clk),
-    .PCNext(PCNext),
-    .PC(PC)
+endmodule
+
+
+/*A partir daqui, fazemos as conexões instanciando os módulos num TopModule, ou seja, o MIPS completo*/
+`timescale 1ns / 1ps
+module MIPScomplete(
+    input clk,
+    output [31:0] PCNext,
+    output [31:0] PC,
+    output [31:0] PCplus4,
+    output [31:0] Instr,
+    output [31:0] Signlmm,
+    output [31:0] ReadData1,
+    output [31:0] ReadData2,
+    output [31:0] PCBranch,
+    output [31:0] Result,
+    output [31:0] SrcB,
+    output [31:0] ALUResult,
+    output [31:0] ReadData,
+    output [4:0] WriteReg,
+    output RegWrite,
+    output RegDst,
+    output MemtoReg,
+    output MemWrite,
+    output Branch,
+    output ALUSrc,
+    output Zero,
+    output [31:0] shifted,
+    output [2:0] ALUControl,
+    output PCSrc,
+    output Jump
 );
+    // Instanciação dos módulos e conexões
+    wire [31:0] Address;
+    
+    Mux muxPC( 
+        .in0(PCplus4),
+        .in1(PCBranch),
+        .sel(PCSrc),
+        .out(PCNext)
+    );
 
-InstructionMemory im(
-    .Address(PC),
-    .Instr(Instr)
-);
+    ProgramCounter pc ( 
+        .clk(clk),
+        .PCNext(PCNext),
+        .PC(PC)
+    );
 
-ControlUnit control(
-    .Op(Instr[31:26]),
-    .Funct(Instr[5:0]),
-    .ALUOp(ALUOp),
-    .MemtoReg(MemtoReg),
-    .MemWrite(MemWrite),
-    .Branch(Branch),
-    .ALUSrc(ALUSrc),
-    .RegDst(RegDst),
-    .RegWrite(RegWrite),
-    .Jump(Jump)
-);
+    PCPlus4 pcplus4 ( 
+        .pc(PC),
+        .PCplus4(PCplus4)
+    );
 
-RegisterFile rf(
-    .clk(clk),
-    .RegWrite(RegWrite),
-    .ReadReg1(Instr[25:21]),
-    .ReadReg2(Instr[20:16]),
-    .WriteReg(WriteReg),
-    .WriteData(MemtoReg ? MemData : ALUResult),
-    .ReadData1(ReadData1),
-    .ReadData2(ReadData2)
-);
+    InstructionMemory im( 
+        .Address(PC),
+        .Instr(Instr)
+    );
 
-ALU alu(
-    .SrcA(ReadData1),
-    .SrcB(ALUSrc ? SignImm : ReadData2),
-    .ALUControl(ALUOp),
-    .ALUResult(ALUResult),
-    .Zero(Zero)
-);
+    RegisterFile rf( 
+        .clk(clk),
+        .RegWrite(RegWrite),
+        .ReadReg1(Instr[25:21]), 
+        .ReadReg2(Instr[20:16]), 
+        .WriteReg(WriteReg),
+        .WriteData(Result), 
+        .ReadData1(ReadData1), 
+        .ReadData2(ReadData2)
+    );
 
-DataMemory dm(
-    .clk(clk),
-    .MemWrite(MemWrite),
-    .Address(ALUResult),
-    .WriteData(ReadData2),
-    .ReadData(MemData)
-);
+    ControlUnit cu( 
+        .Op(Instr[31:26]), 
+        .Funct(Instr[5:0]),
+        .ALUOp(ALUControl),
+        .MemtoReg(MemtoReg), 
+        .MemWrite(MemWrite), 
+        .Branch(Branch), 
+        .ALUSrc(ALUSrc), 
+        .RegDst(RegDst), 
+        .RegWrite(RegWrite), 
+        .Jump(Jump)
+    );
 
-// Assignments
-assign SignImm = { {16{Instr[15]}}, Instr[15:0] };
-assign WriteReg = RegDst ? Instr[15:11] : Instr[20:16];
-assign PCBranch = PC + (SignImm << 2);
-assign PCJump = {PC[31:28], Instr[25:0] << 2}; // Jump address
-assign PCNext = Jump ? PCJump : (Zero & Branch ? PCBranch : PC + 4);
+    Mux mux0(  
+        .in0(ReadData2),
+        .in1(Signlmm),
+        .sel(ALUSrc),
+        .out(SrcB)
+    );
+
+    ALU alu(  
+        .SrcA(ReadData1), 
+        .SrcB(SrcB),
+        .ALUControl(ALUControl),
+        .ALUResult(ALUResult),
+        .Zero(Zero)
+    );
+
+    Mux5Bits mux5b(
+        .in0(Instr[20:16]),
+        .in1(Instr[15:11]),
+        .sel(RegDst),
+        .out(WriteReg)
+    );
+
+    SignalExtend SE( 
+        .Instr(Instr[15:0]),
+        .Signlmm(Signlmm)
+    );
+
+    Shiftleft sf( 
+        .Signlmm(Signlmm),
+        .out(shifted)
+    );
+
+    PCBranch pcBranch( 
+        .PCplus4(PCplus4),
+        .shifted(shifted),
+        .pcbranch(PCBranch)
+    );
+
+    DataMemory dm( 
+        .clk(clk),
+        .MemWrite(MemWrite),
+        .Address(ALUResult), 
+        .WriteData(ReadData2),
+        .ReadData(ReadData)
+    );
+
+    Mux mux1( 
+        .in0(ALUResult),
+        .in1(ReadData),
+        .sel(MemtoReg),
+        .out(Result)
+    );
+
+    // Lógica combinacional para PCSrc
+    reg PCSrc_reg; // Use um reg para PCSrc
+    always @(*) begin
+        PCSrc_reg = Branch && Zero;
+    end
+
+    assign PCSrc = PCSrc_reg; // Conecte a reg ao wire de saída
 
 endmodule
