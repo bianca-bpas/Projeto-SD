@@ -26,7 +26,7 @@ module InstructionMemory(
 );
 
     // Memória de instruções com 1024 palavras de 32 bits
-    reg [31:0] Memory [0:65];
+  reg [31:0] Memory [0:10];
 
     // Inicializa a memória a partir do arquivo .mem
     initial begin
@@ -34,10 +34,11 @@ module InstructionMemory(
         $readmemh("instructions.mem", Memory);
     end
 
-    always @(Address) begin
-        // Lê a instrução no endereço fornecido
-        Instr = Memory[Address >> 2]; // Endereço alinhado para palavras
-    end
+  always @(Address) begin
+      Instr = Memory[Address >> 2];
+    $display("At time %t, Instruction read: %h from address %h", $time, Instr, Address);
+  end
+
 
 endmodule
 
@@ -62,10 +63,10 @@ end
 
 always @(posedge clk) begin
     if (RegWrite) begin
-        $display("At time %t, writing data %h to register %d", $time, WriteData, WriteReg);
         RegFile[WriteReg] <= WriteData;
     end
 end
+
 
 assign ReadData1 = RegFile[ReadReg1];
 assign ReadData2 = RegFile[ReadReg2];
@@ -211,14 +212,49 @@ always @(*) begin
     
     case (Op)
         6'b000000: begin // R-type
-            RegDst <= 1;
-            ALUSrc <= 0;
-            MemtoReg <= 0;
-            RegWrite <= 1;
-            MemWrite <= 0;
-            Branch <= 0;
-            ALUOp <= 3'b010;
-            Jump <= 0;
+            case (Funct)
+                6'b100000: begin // ADD
+                    RegDst <= 1;
+                    ALUSrc <= 0;
+                    MemtoReg <= 0;
+                    RegWrite <= 1;
+                    MemWrite <= 0;
+                    Branch <= 0;
+                    ALUOp <= 3'b010; // ADD
+                    Jump <= 0;
+                end
+                6'b100010: begin // SUB
+                    RegDst <= 1;
+                    ALUSrc <= 0;
+                    MemtoReg <= 0;
+                    RegWrite <= 1;
+                    MemWrite <= 0;
+                    Branch <= 0;
+                    ALUOp <= 3'b110; // SUB
+                    Jump <= 0;
+                end
+                6'b000000: begin
+                    // NOP: No Operation
+                    RegDst <= 0;
+                    ALUSrc <= 0;
+                    MemtoReg <= 0;
+                    RegWrite <= 0;
+                    MemWrite <= 0;
+                    Branch <= 0;
+                    ALUOp <= 3'b000;
+                    Jump <= 0;
+                end
+                default: begin
+                    RegDst <= 1;
+                    ALUSrc <= 0;
+                    MemtoReg <= 0;
+                    RegWrite <= 1;
+                    MemWrite <= 0;
+                    Branch <= 0;
+                    ALUOp <= 3'b010; // Default to ADD
+                    Jump <= 0;
+                end
+            endcase
         end
         6'b100011: begin // LW (Load Word)
             RegDst <= 0;
@@ -260,6 +296,16 @@ always @(*) begin
             ALUOp <= 3'b000;
             Jump <= 1;
         end
+        6'b001000: begin // ADDI
+            RegDst <= 0;
+            ALUSrc <= 1;
+            MemtoReg <= 0;
+            RegWrite <= 1;
+            MemWrite <= 0;
+            Branch <= 0;
+            ALUOp <= 3'b010; // ADD
+            Jump <= 0;
+        end
         default: begin
             // Default values already set above
         end
@@ -267,6 +313,9 @@ always @(*) begin
 end
 
 endmodule
+
+
+
 
 
 /*A partir daqui, fazemos as conexões instanciando os módulos num TopModule, ou seja, o MIPS completo*/
