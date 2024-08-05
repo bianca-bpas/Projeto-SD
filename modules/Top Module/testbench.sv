@@ -77,12 +77,13 @@ module MIPScomplete_tb;
         uut.im.Memory[0] = 32'b000000_00001_00001_00010_00000_100000; // ADD $2, $1, $1
         uut.im.Memory[1] = 32'b100011_00000_00011_0000000000000000;   // LW $3, 0($0)
         uut.im.Memory[2] = 32'b101011_00000_00010_0000000000000000;   // SW $2, 0($0)
-        uut.im.Memory[3] = 32'b000100_00001_00010_0000000000000010;   // BEQ $1, $2, 2
+        uut.im.Memory[3] = 32'b000100_00010_00011_0000000000000010;   // BEQ $2, $3, 2
         uut.im.Memory[4] = 32'b000010_00000000000000000000000001;     // JUMP to address 1
 
         // Initialize Register File
         uut.rf.RegFile[1] = 32'h00000001; // $1 = 1
         uut.rf.RegFile[2] = 32'h00000002; // $2 = 2
+        uut.rf.RegFile[3] = 32'h00000002; // $3 = 2
 
         // Simulation run time
         #100 $finish;
