@@ -29,6 +29,9 @@ module MIPScomplete_tb;
     wire [2:0] ALUControl;
     wire PCSrc;
     wire Jump;
+    
+    // Registrador alarme
+    reg alarme; // Registrador alarme
 
     // Instantiate the MIPScomplete module
     MIPScomplete uut (
@@ -65,23 +68,21 @@ module MIPScomplete_tb;
     initial begin
         // Initialize Inputs
         clk = 0;
+        alarme = 0; // Inicializa alarme como 0
 
         // Wait for the global reset
         #10;
 
-        // Initialize Instruction Memory with some instructions (manual binary values)
-        uut.im.Memory[0] = 32'b000000_00001_00010_00011_00000_100000; // ADD $3, $1, $2
-        uut.im.Memory[1] = 32'b100011_00001_00100_0000000000000100;  // LW $4, 4($1)
-        uut.im.Memory[2] = 32'b101011_00001_00101_0000000000001000;  // SW $5, 8($1)
-        uut.im.Memory[3] = 32'b000100_00001_00010_0000000000000010;  // BEQ $1, $2, 2
-        uut.im.Memory[4] = 32'b000010_00000000000000000000000100;    // JUMP to address 4
+        // Initialize Instruction Memory with some instructions
+        uut.im.Memory[0] = 32'b000000_00001_00001_00010_00000_100000; // ADD $2, $1, $1
+        uut.im.Memory[1] = 32'b100011_00000_00011_0000000000000000;   // LW $3, 0($0)
+        uut.im.Memory[2] = 32'b101011_00000_00010_0000000000000000;   // SW $2, 0($0)
+        uut.im.Memory[3] = 32'b000100_00001_00010_0000000000000010;   // BEQ $1, $2, 2
+        uut.im.Memory[4] = 32'b000010_00000000000000000000000001;     // JUMP to address 1
 
-        // Initialize Register File (manual initial states)
-        uut.rf.RegFile[1] = 32'h00000001;
-        uut.rf.RegFile[2] = 32'h00000002;
-        uut.rf.RegFile[3] = 32'h00000003;
-        uut.rf.RegFile[4] = 32'h00000004;
-        uut.rf.RegFile[5] = 32'h00000005;
+        // Initialize Register File
+        uut.rf.RegFile[1] = 32'h00000001; // $1 = 1
+        uut.rf.RegFile[2] = 32'h00000002; // $2 = 2
 
         // Simulation run time
         #100 $finish;
@@ -89,14 +90,32 @@ module MIPScomplete_tb;
 
     // Monitor to track changes in important signals
     initial begin
-        $monitor("Time: %t, PC: %h, Instr: %h, ReadData1: %h, ReadData2: %h, ALUResult: %h, MemReadData: %h, RegWrite: %b",
-                 $time, PC, Instr, ReadData1, ReadData2, ALUResult, ReadData, RegWrite);
+        $monitor("Time: %t, PC: %h, Instr: %h, ReadData1: %h, ReadData2: %h, ALUResult: %h, MemReadData: %h, RegWrite: %b, Alarme: %b",
+                 $time, PC, Instr, ReadData1, ReadData2, ALUResult, ReadData, RegWrite, alarme);
     end
 
     // Monitor memory writes
     always @(posedge clk) begin
         if (uut.MemWrite) begin
             $display("Time: %t, Memory Write: Address = %h, Data = %h", $time, uut.ALUResult, uut.ReadData2);
+        end
+    end
+
+    // Lógica do BEQ
+    always @(posedge clk) begin
+        if (uut.ReadData1 == uut.ReadData2) begin // Verifica se os registradores são iguais
+            alarme <= 1; // Ativa alarme se a condição for verdadeira
+        end else begin
+            alarme <= 0; // Reseta alarme caso contrário
+        end
+    end
+
+    // Impressão do estado do alarme
+    always @(posedge clk) begin
+        if (alarme) begin
+            $display("Time: %t, Alarme ativado! Valor do alarme: %b", $time, alarme); // Impressão quando ativado
+        end else begin
+            $display("Time: %t, Alarme desativado! Valor do alarme: %b", $time, alarme); // Impressão quando desativado
         end
     end
 
