@@ -1,8 +1,10 @@
 `timescale 1ns / 1ps
+module MIPScomplete_tb;
 
-module tb_MIPScomplete();
-
+    // Inputs
     reg clk;
+
+    // Outputs
     wire [31:0] PCNext;
     wire [31:0] PC;
     wire [31:0] PCplus4;
@@ -28,7 +30,7 @@ module tb_MIPScomplete();
     wire PCSrc;
     wire Jump;
 
-    // Instancia o MIPS completo
+    // Instantiate the MIPScomplete module
     MIPScomplete uut (
         .clk(clk),
         .PCNext(PCNext),
@@ -58,36 +60,44 @@ module tb_MIPScomplete();
     );
 
     // Clock generation
-    always begin
-        clk = 1'b0;
-        #5;
-        clk = 1'b1;
-        #5;
+    always #5 clk = ~clk;
+
+    initial begin
+        // Initialize Inputs
+        clk = 0;
+
+        // Wait for the global reset
+        #10;
+
+        // Initialize Instruction Memory with some instructions (manual binary values)
+        uut.im.Memory[0] = 32'b000000_00001_00010_00011_00000_100000; // ADD $3, $1, $2
+        uut.im.Memory[1] = 32'b100011_00001_00100_0000000000000100;  // LW $4, 4($1)
+        uut.im.Memory[2] = 32'b101011_00001_00101_0000000000001000;  // SW $5, 8($1)
+        uut.im.Memory[3] = 32'b000100_00001_00010_0000000000000010;  // BEQ $1, $2, 2
+        uut.im.Memory[4] = 32'b000010_00000000000000000000000100;    // JUMP to address 4
+
+        // Initialize Register File (manual initial states)
+        uut.rf.RegFile[1] = 32'h00000001;
+        uut.rf.RegFile[2] = 32'h00000002;
+        uut.rf.RegFile[3] = 32'h00000003;
+        uut.rf.RegFile[4] = 32'h00000004;
+        uut.rf.RegFile[5] = 32'h00000005;
+
+        // Simulation run time
+        #100 $finish;
     end
 
-    // Inicialização e monitoramento
+    // Monitor to track changes in important signals
     initial begin
-        // Inicializa sinais
-        $display("Time\tclk\tPC\tInstr\tRegWrite\tWriteReg\tWriteData\tMemWrite\tMemAddr\tMemData\tReadData");
+        $monitor("Time: %t, PC: %h, Instr: %h, ReadData1: %h, ReadData2: %h, ALUResult: %h, MemReadData: %h, RegWrite: %b",
+                 $time, PC, Instr, ReadData1, ReadData2, ALUResult, ReadData, RegWrite);
+    end
 
-        // Monitoramento de sinais críticos
-        $monitor("%g\t%b\t%h\t%h\t%b\t%h\t%h\t%b\t%h\t%h\t%h", $time, clk, PC, Instr, RegWrite, WriteReg, Result, MemWrite, ALUResult, ReadData2, ReadData);
-
-        // Inicializa a memória de instruções
-        // (Defina as instruções aqui ou utilize um arquivo .mem)
-        // Por exemplo:
-        /*
-        // Exemplo de instruções (Use a inicialização da memória de instruções conforme necessário)
-        // lw $1, 1($0)
-        // add $3, $1, $2
-        // sw $3, 1($0)
-        // beq $1, $2, 2
-        // j 0
-        */
-
-        // Executa a simulação por um período de tempo
-        #200;
-        $finish;
+    // Monitor memory writes
+    always @(posedge clk) begin
+        if (uut.MemWrite) begin
+            $display("Time: %t, Memory Write: Address = %h, Data = %h", $time, uut.ALUResult, uut.ReadData2);
+        end
     end
 
 endmodule
