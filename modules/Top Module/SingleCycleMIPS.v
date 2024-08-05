@@ -26,7 +26,7 @@ module InstructionMemory(
 );
 
     // Memória de instruções com 1024 palavras de 32 bits
-  reg [31:0] Memory [0:7];
+  reg [31:0] Memory [0:12];
 
     // Inicializa a memória a partir do arquivo .mem
     initial begin
@@ -183,7 +183,7 @@ module DataMemory(
     initial begin
       // Inicialize a memória com valores específicos se necessário
       integer i;
-      for (i = 0; i < 8; i = i + 1) begin
+      for (i = 0; i < 16; i = i + 1) begin
           Memory[i] = 32'b0; // Inicializa todos os valores com 0
       end
   end
