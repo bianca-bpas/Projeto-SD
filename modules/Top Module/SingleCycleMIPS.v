@@ -26,7 +26,7 @@ module InstructionMemory(
 );
 
     // Memória de instruções com 1024 palavras de 32 bits
-  reg [31:0] Memory [0:12];
+  reg [31:0] Memory [0:4];
 
     // Inicializa a memória a partir do arquivo .mem
     initial begin
@@ -175,7 +175,7 @@ module DataMemory(
     output reg [31:0] ReadData
 );
 
-  reg [31:0] Memory [0:15]; // Memória com 8 palavras de 32 bits
+  reg [31:0] Memory [0:4]; // Memória com 8 palavras de 32 bits
 
     // Constante para o tamanho máximo da memória
     parameter MEMORY_SIZE = 16;
