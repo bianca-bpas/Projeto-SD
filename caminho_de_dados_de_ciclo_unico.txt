@@ -1,2 +1,0 @@
-O registro contador de porgrama (PC) contém o endereço da instrução a
-executar. O primeiro passo é ler esta instrução da memória de instruções
